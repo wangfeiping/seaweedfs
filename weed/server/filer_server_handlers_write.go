@@ -25,11 +25,13 @@ import (
 )
 
 type FilerPostResult struct {
-	Name  string `json:"name,omitempty"`
+	//Name  string `json:"name,omitempty"`
+        Name  string `json:"fileName,omitempty"`
 	Size  uint32 `json:"size,omitempty"`
 	Error string `json:"error,omitempty"`
 	Fid   string `json:"fid,omitempty"`
-	Url   string `json:"url,omitempty"`
+	//Url   string `json:"url,omitempty"`
+        Url   string `json:"fileUrl,omitempty"`
 }
 
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
@@ -329,12 +331,15 @@ func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+        rsUrl := []rune(urlLocation)
+        hostUri := string(rsUrl[7:len(rsUrl)])
+
 	reply := FilerPostResult{
 		Name:  ret.Name,
 		Size:  ret.Size,
 		Error: ret.Error,
 		Fid:   fileId,
-		Url:   urlLocation,
+		Url:   hostUri, //urlLocation,
 	}
 	writeJsonQuiet(w, r, http.StatusCreated, reply)
 }
