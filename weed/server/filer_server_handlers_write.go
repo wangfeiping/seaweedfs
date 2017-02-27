@@ -103,7 +103,8 @@ func (fs *FilerServer) assignNewFileInfo(w http.ResponseWriter, r *http.Request,
 		return
 	}
 	fileId = assignResult.Fid
-	urlLocation = "http://" + assignResult.Url + "/" + assignResult.Fid
+	// urlLocation = "http://" + assignResult.Url + "/" + assignResult.Fid
+        urlLocation = "http://" + assignResult.PublicUrl + "/" + assignResult.Fid
 	return
 }
 
