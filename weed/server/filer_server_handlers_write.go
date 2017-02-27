@@ -331,15 +331,12 @@ func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-        rsUrl := []rune(urlLocation)
-        hostUri := string(rsUrl[7:len(rsUrl)])
-
 	reply := FilerPostResult{
 		Name:  ret.Name,
 		Size:  ret.Size,
 		Error: ret.Error,
 		Fid:   fileId,
-		Url:   hostUri, //urlLocation,
+		Url:   urlLocation,
 	}
 	writeJsonQuiet(w, r, http.StatusCreated, reply)
 }
