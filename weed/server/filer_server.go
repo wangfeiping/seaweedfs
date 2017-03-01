@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"sync"
 	"time"
+        "strings"
 
 	"github.com/chrislusf/seaweedfs/weed/filer"
 	"github.com/chrislusf/seaweedfs/weed/filer/cassandra_store"
@@ -97,8 +98,13 @@ func NewFilerServer(r *http.ServeMux, ip string, port int, master string, dir st
 		}
 		fs.filer = flat_namespace.NewFlatNamespaceFiler(master, cassandra_store)
 	} else if redis_server != "" {
-		redis_store := redis_store.NewRedisStore(redis_server, redis_password, redis_database)
-		fs.filer = flat_namespace.NewFlatNamespaceFiler(master, redis_store)
+                if redisServers := strings.Split(redis_server, ","); len(redisServers) > 1 {
+                        redis_cluster_store := redis_store.NewRedisClusterStore(redisServers, redis_password, redis_database)
+                        fs.filer = flat_namespace.NewFlatNamespaceFiler(master, redis_cluster_store)
+                } else {
+		        redis_store := redis_store.NewRedisStore(redis_server, redis_password, redis_database)
+                        fs.filer = flat_namespace.NewFlatNamespaceFiler(master, redis_store)
+                }
 	} else {
 		if fs.filer, err = embedded_filer.NewFilerEmbedded(master, dir); err != nil {
 			glog.Fatalf("Can not start filer in dir %s : %v", dir, err)
