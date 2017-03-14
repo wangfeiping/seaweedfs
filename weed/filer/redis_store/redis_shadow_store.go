@@ -24,13 +24,17 @@ func NewRedisShadowStore(hostPort string, password string, database int) *RedisS
 	if l < 2 {
 		return nil
 	}
+	clientHostPort := addrs[0]
+	shadowHostPort := addrs[1]
+	glog.Infof("client redis.server: %s", clientHostPort)
+	glog.Infof("shadow redis.server: %s", shadowHostPort)
 	client := redis.NewTCPClient(&redis.Options{
-		Addr:     addrs[0],
+		Addr:     clientHostPort,
 		Password: password,
 		DB:       int64(database),
 	})
 	shadowClient := redis.NewTCPClient(&redis.Options{
-		Addr:     addrs[1],
+		Addr:     shadowHostPort,
 		Password: password,
 		DB:       int64(database),
 	})
@@ -42,9 +46,11 @@ func NewRedisShadowStore(hostPort string, password string, database int) *RedisS
 
 func (s *RedisShadowStore) Get(fullFileName string) (fid string, err error) {
 	fid, err = s.Client.Get(fullFileName).Result()
+	glog.Infof("redis get client  fid %s", fid)
 	if err == redis.Nil {
 		err = filer.ErrNotFound
 		fid, err = s.ShadowClient.Get(fullFileName).Result()
+		glog.Infof("redis get shadow fid %s", fid)
 		if err == redis.Nil {
 			err = filer.ErrNotFound
 		}
