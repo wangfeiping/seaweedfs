@@ -46,17 +46,17 @@ func NewRedisShadowStore(hostPort string, password string, database int) *RedisS
 
 func (s *RedisShadowStore) Get(fullFileName string) (fid string, err error) {
 	fid, err = s.Client.Get(fullFileName).Result()
-	glog.Infof("redis get client  fid %s", fid)
-	if err == redis.Nil {
-		err = filer.ErrNotFound
+	glog.Infof("redis client get fid %s", fid)
+	if err != nil { // == redis.Nil {
 		fid, err = s.ShadowClient.Get(fullFileName).Result()
-		glog.Infof("redis get shadow fid %s", fid)
+		glog.Infof("redis shadow get fid %s", fid)
 		if err == redis.Nil {
 			err = filer.ErrNotFound
 		}
 	}
 	return fid, err
 }
+
 func (s *RedisShadowStore) Put(fullFileName string, fid string) (err error) {
 	_, err = s.Client.Set(fullFileName, fid).Result()
 	if err == redis.Nil {
