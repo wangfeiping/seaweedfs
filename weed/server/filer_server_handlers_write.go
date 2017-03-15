@@ -26,12 +26,12 @@ import (
 
 type FilerPostResult struct {
 	//Name  string `json:"name,omitempty"`
-        Name  string `json:"fileName,omitempty"`
+	Name  string `json:"fileName,omitempty"`
 	Size  uint32 `json:"size,omitempty"`
 	Error string `json:"error,omitempty"`
 	Fid   string `json:"fid,omitempty"`
 	//Url   string `json:"url,omitempty"`
-        Url   string `json:"fileUrl,omitempty"`
+	Url string `json:"fileUrl,omitempty"`
 }
 
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
@@ -106,7 +106,10 @@ func (fs *FilerServer) assignNewFileInfo(w http.ResponseWriter, r *http.Request,
 	}
 	fileId = assignResult.Fid
 	// urlLocation = "http://" + assignResult.Url + "/" + assignResult.Fid
-        urlLocation = "http://" + assignResult.PublicUrl + "/" + assignResult.Fid
+	urlLocation = "http://" + assignResult.PublicUrl + "/" + assignResult.Fid
+	if r.URL.Query().Get("ttl") != "" {
+		urlLocation += "?ttl=" + r.URL.Query().Get("ttl")
+	}
 	return
 }
 
