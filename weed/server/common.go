@@ -86,7 +86,8 @@ func submitForClientHandler(w http.ResponseWriter, r *http.Request, masterUrl st
 	}
 
 	debug("parsing upload file...")
-	fname, data, mimeType, pairMap, isGzipped, lastModified, _, _, pe := storage.ParseUpload(r)
+	fname, data, mimeType, pairMap, isGzipped, lastModified,
+		_, _, pe := storage.ParseUpload(r)
 	if pe != nil {
 		writeJsonError(w, r, http.StatusBadRequest, pe)
 		return
@@ -94,11 +95,12 @@ func submitForClientHandler(w http.ResponseWriter, r *http.Request, masterUrl st
 
 	debug("assigning file id for", fname)
 	r.ParseForm()
+	ttl := r.FormValue("ttl")
 	ar := &operation.VolumeAssignRequest{
 		Count:       1,
 		Replication: r.FormValue("replication"),
 		Collection:  r.FormValue("collection"),
-		Ttl:         r.FormValue("ttl"),
+		Ttl:         ttl,
 	}
 	assignResult, ae := operation.Assign(masterUrl, ar)
 	if ae != nil {
@@ -109,6 +111,11 @@ func submitForClientHandler(w http.ResponseWriter, r *http.Request, masterUrl st
 	url := "http://" + assignResult.Url + "/" + assignResult.Fid
 	if lastModified != 0 {
 		url = url + "?ts=" + strconv.FormatUint(lastModified, 10)
+		if ttl != "" {
+			url = url + "&ttl=" + ttl
+		}
+	} else if ttl != "" {
+		url = url + "?ttl=" + ttl
 	}
 
 	debug("upload file to store", url)
