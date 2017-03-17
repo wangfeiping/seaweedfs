@@ -106,10 +106,6 @@ func (fs *FilerServer) GetOrHeadHandler(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 	urlString := urlLocation
-	if fs.redirectOnRead {
-		http.Redirect(w, r, urlString, http.StatusFound)
-		return
-	}
 	u, _ := url.Parse(urlString)
 	q := u.Query()
 	for key, values := range r.URL.Query() {
@@ -118,6 +114,11 @@ func (fs *FilerServer) GetOrHeadHandler(w http.ResponseWriter, r *http.Request, 
 		}
 	}
 	u.RawQuery = q.Encode()
+	urlString = u.String()
+	if fs.redirectOnRead {
+		http.Redirect(w, r, urlString, http.StatusFound)
+		return
+	}
 	request := &http.Request{
 		Method:        r.Method,
 		URL:           u,
