@@ -59,6 +59,9 @@ func (s *RedisShadowStore) Get(fullFileName string) (fid string, err error) {
 
 func (s *RedisShadowStore) Put(fullFileName string, fid string) (err error) {
 	_, err = s.Client.Set(fullFileName, fid).Result()
+	if err == redis.Nil || err == nil {
+		_, err = s.Client.Set(fid, fullFileName).Result()
+	}
 	if err == redis.Nil {
 		err = nil
 	}
