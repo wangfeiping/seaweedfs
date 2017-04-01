@@ -41,17 +41,17 @@ func (s *RedisClusterStore) Put(fullFileName string, fid string) (err error) {
 	if err = pipe.Set(fullFileName, fid, 0).Err(); err != nil {
 		e := pipe.Discard()
 		if e != nil {
-			glog.Fatalf("redis txpipeline discard error! file = %s fid = %s : %v", fullFileName, fid, e)
+			glog.Errorf("redis txpipeline discard error! file = %s fid = %s : %v", fullFileName, fid, e)
 		}
 	} else if err = pipe.Set(fid, fullFileName, 0).Err(); err != nil {
 		e := pipe.Discard()
 		if e != nil {
-			glog.Fatalf("redis txpipeline discard error! fid = %s file = %s : %v", fullFileName, fid, e)
+			glog.Errorf("redis txpipeline discard error! fid = %s file = %s : %v", fullFileName, fid, e)
 		}
 	}
 	_, e := pipe.Exec()
 	if e != nil {
-		glog.Fatalf("redis txpipeline exec error! %s %s : %v", fullFileName, fid, e)
+		glog.Errorf("redis txpipeline exec error! %s %s : %v", fullFileName, fid, e)
 	}
 	glog.Infof("redis tx put %s %s", fullFileName, fid)
 	return
