@@ -10,14 +10,31 @@ Of course, you could customize the schema per your concretely circumstance freel
 <pre><code>
 CREATE TABLE IF NOT EXISTS `filer_mapping` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `uriPath` char(256) NOT NULL DEFAULT "" COMMENT 'http uriPath',
+  `uriPath` char(255) NOT NULL DEFAULT "" COMMENT 'http uriPath',
   `fid` char(36) NOT NULL DEFAULT "" COMMENT 'seaweedfs fid',
+  `ttl` char(36) NOT NULL DEFAULT "" COMMENT 'seaweedfs ttl',
   `createTime` int(10) NOT NULL DEFAULT 0 COMMENT 'createdTime in unix timestamp',
   `updateTime` int(10) NOT NULL DEFAULT 0 COMMENT 'updatedTime in unix timestamp',
   `remark` varchar(20) NOT NULL DEFAULT "" COMMENT 'reserverd field',
   `status` tinyint(2) DEFAULT '1' COMMENT 'resource status',
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_uriPath` (`uriPath`)
+) DEFAULT CHARSET=utf8;
+
+ALTER TABLE `filer_mapping` ADD INDEX `index_createTime` (`createTime`)
+
+Just save ttl setting for path
+
+CREATE TABLE IF NOT EXISTS `filer_path_ttl` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `uriPath` char(255) NOT NULL DEFAULT "" COMMENT 'http uriPath',
+  `ttl` char(36) NOT NULL DEFAULT "" COMMENT 'seaweedfs ttl',
+  `createTime` int(10) NOT NULL DEFAULT 0 COMMENT 'createdTime in unix timestamp',
+  `updateTime` int(10) NOT NULL DEFAULT 0 COMMENT 'updatedTime in unix timestamp',
+  `remark` varchar(20) NOT NULL DEFAULT "" COMMENT 'reserverd field',
+  `status` tinyint(2) DEFAULT '1' COMMENT 'resource status',
+  PRIMARY KEY (`id`),
+  KEY `index_createTime` (`createTime`)
 ) DEFAULT CHARSET=utf8;
 </code></pre>
 
@@ -61,6 +78,7 @@ The "mysql" field in above conf file is an array which include all mysql instanc
 3. If the mysql service could be auto scaled transparently in your environment, just config one mysql instance(usually it's a frondend proxy or VIP),and mark "IsSharding" with false value
 
 4. If you prepare more than one mysql instance and have no plan to use table sharding for any instance(mark isSharding with false), instance sharding will still be done implicitly
+
 
 
 
