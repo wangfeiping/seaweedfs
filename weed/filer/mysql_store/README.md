@@ -27,7 +27,8 @@ Just save ttl setting for path
 
 CREATE TABLE IF NOT EXISTS `filer_path_ttl` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `uriPath` char(255) NOT NULL DEFAULT "" COMMENT 'http uriPath',
+  `folderPath` char(255) NOT NULL DEFAULT "" COMMENT 'http uriPath',
+  `fid` char(36) NOT NULL DEFAULT "" COMMENT 'seaweedfs fid',
   `ttl` char(36) NOT NULL DEFAULT "" COMMENT 'seaweedfs ttl',
   `createTime` int(10) NOT NULL DEFAULT 0 COMMENT 'createdTime in unix timestamp',
   `updateTime` int(10) NOT NULL DEFAULT 0 COMMENT 'updatedTime in unix timestamp',
