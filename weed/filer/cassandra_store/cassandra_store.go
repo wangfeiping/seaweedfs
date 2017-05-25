@@ -49,7 +49,7 @@ func NewCassandraStore(keyspace string, hosts string) (c *CassandraStore, err er
 	return
 }
 
-func (c *CassandraStore) Put(fullFileName string, fid string) (err error) {
+func (c *CassandraStore) Put(fullFileName string, fid string, ttl string) (err error) {
 	var input []string
 	input = append(input, fid)
 	if err := c.session.Query(
@@ -94,3 +94,4 @@ func (c *CassandraStore) Close() {
 		c.session.Close()
 	}
 }
+

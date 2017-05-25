@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `filer_path_ttl` (
 ) DEFAULT CHARSET=utf8;
 </code></pre>
 
+alter table `filer_mapping` add COLUMN `ttl` char(36) NOT NULL DEFAULT "";
 
 The MySQL 's config params is not added into the weed command option as other stores(redis,cassandra). Instead,
 We created a config file(json format) for them. TOML,YAML or XML also should be OK. But TOML and YAML need import thirdparty package

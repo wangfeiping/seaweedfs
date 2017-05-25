@@ -19,7 +19,7 @@ type DirectoryEntry struct {
 }
 
 type Filer interface {
-	CreateFile(fullFileName string, fid string) (err error)
+	CreateFile(fullFileName string, fid string, ttl string) (err error)
 	FindFile(fullFileName string) (fid string, err error)
 	DeleteFile(fullFileName string) (fid string, err error)
 
@@ -32,3 +32,4 @@ type Filer interface {
 }
 
 var ErrNotFound = errors.New("filer: no entry is found in filer store")
+

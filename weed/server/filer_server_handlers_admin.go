@@ -31,7 +31,7 @@ func (fs *FilerServer) moveHandler(w http.ResponseWriter, r *http.Request) {
 func (fs *FilerServer) registerHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.FormValue("path")
 	fileId := r.FormValue("fileId")
-	err := fs.filer.CreateFile(path, fileId)
+	err := fs.filer.CreateFile(path, fileId, "")
 	if err != nil {
 		glog.V(4).Infof("register %s to %s error: %v", fileId, path, err)
 		writeJsonError(w, r, http.StatusInternalServerError, err)
@@ -39,3 +39,4 @@ func (fs *FilerServer) registerHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 }
+

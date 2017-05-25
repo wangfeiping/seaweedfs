@@ -22,8 +22,8 @@ func NewFlatNamespaceFiler(master string, store FlatNamespaceStore) *FlatNamespa
 	}
 }
 
-func (filer *FlatNamespaceFiler) CreateFile(fullFileName string, fid string) (err error) {
-	return filer.store.Put(fullFileName, fid)
+func (filer *FlatNamespaceFiler) CreateFile(fullFileName string, fid string, ttl string) (err error) {
+	return filer.store.Put(fullFileName, fid, ttl)
 }
 func (filer *FlatNamespaceFiler) FindFile(fullFileName string) (fid string, err error) {
 	return filer.store.Get(fullFileName)
@@ -60,3 +60,4 @@ func (filer *FlatNamespaceFiler) DeleteFile(fullFileName string) (fid string, er
 func (filer *FlatNamespaceFiler) Move(fromPath string, toPath string) error {
 	return ErrNotImplemented
 }
+

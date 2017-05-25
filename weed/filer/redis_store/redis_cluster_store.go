@@ -31,7 +31,7 @@ func (s *RedisClusterStore) Get(fullFileName string) (fid string, err error) {
 	return fid, err
 }
 
-func (s *RedisClusterStore) Put(fullFileName string, fid string) (err error) {
+func (s *RedisClusterStore) Put(fullFileName string, fid string, ttl string) (err error) {
 	//	_, err = s.Client.Set(fullFileName, fid, 0).Result()
 	//	if err == redis.Nil {
 	//		err = nil
@@ -94,3 +94,4 @@ func (s *RedisClusterStore) Close() {
 		s.Client.Close()
 	}
 }
+

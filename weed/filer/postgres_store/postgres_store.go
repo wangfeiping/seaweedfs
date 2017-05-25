@@ -11,9 +11,10 @@ import (
 	"github.com/chrislusf/seaweedfs/weed/filer"
 	"github.com/chrislusf/seaweedfs/weed/glog"
 
-	_ "github.com/lib/pq"
 	_ "path/filepath"
 	"strings"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -46,9 +47,9 @@ type PostgresStore struct {
 	password string
 }
 
-func (s *PostgresStore) CreateFile(fullFileName string, fid string) (err error) {
+func (s *PostgresStore) CreateFile(fullFileName string, fid string, ttl string) (err error) {
 	glog.V(3).Infoln("Calling posgres_store CreateFile")
-	return s.Put(fullFileName, fid)
+	return s.Put(fullFileName, fid, ttl)
 }
 
 func (s *PostgresStore) FindFile(fullFileName string) (fid string, err error) {
@@ -209,7 +210,7 @@ func (s *PostgresStore) Get(fullFilePath string) (fid string, err error) {
 	return fid, err
 }
 
-func (s *PostgresStore) Put(fullFilePath string, fid string) (err error) {
+func (s *PostgresStore) Put(fullFilePath string, fid string, ttl string) (err error) {
 	var old_fid string
 	if old_fid, err = s.query(fullFilePath); err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("PostgresStore Put operation failed when querying path %s: err is %v", fullFilePath, err)
@@ -621,3 +622,4 @@ func (s *PostgresStore) findFiles(dirPath string, lastFileName string, limit int
 
 	return files, err
 }
+

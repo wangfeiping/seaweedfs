@@ -33,7 +33,7 @@ func NewFilerEmbedded(master string, dir string) (filer *FilerEmbedded, err erro
 	return
 }
 
-func (filer *FilerEmbedded) CreateFile(filePath string, fid string) (err error) {
+func (filer *FilerEmbedded) CreateFile(filePath string, fid string, ttl string) (err error) {
 	dir, file := filepath.Split(filePath)
 	dirId, e := filer.directories.MakeDirectory(dir)
 	if e != nil {
@@ -132,10 +132,11 @@ func (filer *FilerEmbedded) Move(fromPath string, toPath string) error {
 	if fid, file_err := filer.DeleteFile(fromPath); file_err == nil {
 		if _, err := filer.FindDirectory(toPath); err == nil {
 			// move file under an existing folder
-			return filer.CreateFile(filepath.Join(toPath, filepath.Base(fromPath)), fid)
+			return filer.CreateFile(filepath.Join(toPath, filepath.Base(fromPath)), fid, "")
 		}
 		// move to a folder with new name
-		return filer.CreateFile(toPath, fid)
+		return filer.CreateFile(toPath, fid, "")
 	}
 	return fmt.Errorf("File %s is not found!", fromPath)
 }
+

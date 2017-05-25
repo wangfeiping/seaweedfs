@@ -327,7 +327,7 @@ func (fs *FilerServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	glog.V(4).Infoln("saving", path, "=>", fileId)
-	if db_err := fs.filer.CreateFile(path, fileId); db_err != nil {
+	if db_err := fs.filer.CreateFile(path, fileId, "999m"); db_err != nil {
 		operation.DeleteFile(fs.getMasterNode(), fileId, fs.jwt(fileId)) //clean up
 		glog.V(0).Infof("failing to write %s to filer server : %v", path, db_err)
 		writeJsonError(w, r, http.StatusInternalServerError, db_err)
@@ -512,7 +512,7 @@ func (fs *FilerServer) doAutoChunk(w http.ResponseWriter, r *http.Request, conte
 	}
 
 	glog.V(4).Infoln("saving", path, "=>", manifestFileId)
-	if db_err := fs.filer.CreateFile(path, manifestFileId); db_err != nil {
+	if db_err := fs.filer.CreateFile(path, manifestFileId, ""); db_err != nil {
 		replyerr = db_err
 		filerResult.Error = db_err.Error()
 		operation.DeleteFile(fs.getMasterNode(), manifestFileId, fs.jwt(manifestFileId)) //clean up
@@ -558,3 +558,4 @@ func (fs *FilerServer) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		writeJsonError(w, r, http.StatusInternalServerError, err)
 	}
 }
+
