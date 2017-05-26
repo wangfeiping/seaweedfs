@@ -147,12 +147,12 @@ func (s *MySqlStore) Put(fullFilePath string, fid string, ttl string) (err error
 		return fmt.Errorf("MySqlStore Put operation failed when querying path %s: err is %v", fullFilePath, err)
 	} else {
 		if len(old_fid) == 0 {
-			err = s.insert(fullFilePath, fid, s.dbs[instance_offset], tableFullName)
+			err = s.insert(fullFilePath, fid, ttl, s.dbs[instance_offset], tableFullName)
 			if err != nil {
 				err = fmt.Errorf("MySqlStore Put operation failed when inserting path %s with fid %s : err is %v", fullFilePath, fid, err)
 			}
 		} else {
-			err = s.update(fullFilePath, fid, s.dbs[instance_offset], tableFullName)
+			err = s.update(fullFilePath, fid, ttl, s.dbs[instance_offset], tableFullName)
 			if err != nil {
 				err = fmt.Errorf("MySqlStore Put operation failed when updating path %s with fid %s : err is %v", fullFilePath, fid, err)
 			}
@@ -231,9 +231,11 @@ func (s *MySqlStore) query(uriPath string, db *sql.DB, tableName string) (string
 	return fid, nil
 }
 
-func (s *MySqlStore) update(uriPath string, fid string, db *sql.DB, tableName string) error {
-	sqlStatement := "UPDATE %s SET fid=?, updateTime=? WHERE uriPath=?"
-	res, err := db.Exec(fmt.Sprintf(sqlStatement, tableName), fid, time.Now().Unix(), uriPath)
+func (s *MySqlStore) update(uriPath string, fid string, ttl string,
+	db *sql.DB, tableName string) error {
+	sqlStatement := "UPDATE %s SET fid=?, ttl=?, updateTime=? WHERE uriPath=?"
+	res, err := db.Exec(fmt.Sprintf(sqlStatement, tableName),
+		fid, ttl, time.Now().Unix(), uriPath)
 	if err != nil {
 		return err
 	}
@@ -245,9 +247,11 @@ func (s *MySqlStore) update(uriPath string, fid string, db *sql.DB, tableName st
 	return nil
 }
 
-func (s *MySqlStore) insert(uriPath string, fid string, db *sql.DB, tableName string) error {
-	sqlStatement := "INSERT INTO %s (uriPath,fid,createTime) VALUES(?,?,?)"
-	res, err := db.Exec(fmt.Sprintf(sqlStatement, tableName), uriPath, fid, time.Now().Unix())
+func (s *MySqlStore) insert(uriPath string, fid string, ttl string,
+	db *sql.DB, tableName string) error {
+	sqlStatement := "INSERT INTO %s (uriPath,fid,ttl,createTime) VALUES(?,?,?,?)"
+	res, err := db.Exec(fmt.Sprintf(sqlStatement, tableName),
+		uriPath, fid, ttl, time.Now().Unix())
 	if err != nil {
 		return err
 	}
