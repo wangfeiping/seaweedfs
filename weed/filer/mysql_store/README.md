@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `filer_path_ttl` (
   `remark` varchar(20) NOT NULL DEFAULT "" COMMENT 'reserverd field',
   `status` tinyint(2) DEFAULT '1' COMMENT 'resource status',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `index_folderPath` (`folderPath`),
   KEY `index_createTime` (`createTime`)
 ) DEFAULT CHARSET=utf8;
 </code></pre>
