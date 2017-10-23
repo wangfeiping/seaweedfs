@@ -232,14 +232,22 @@ func (s *MySqlStore) query(uriPath string, db *sql.DB, tableName string) (string
 }
 
 func (s *MySqlStore) update(uriPath string, fid string, ttl string,
-	db *sql.DB, tableName string) error {
-	sqlStatement := "UPDATE %s SET fid=?, ttl=?, updateTime=? WHERE uriPath=?"
-	res, err := db.Exec(fmt.Sprintf(sqlStatement, tableName),
-		fid, ttl, time.Now().Unix(), uriPath)
+	db *sql.DB, tableName string) (err error) {
+	var res sql.Result
+	// 如果ttl为空字符串时没有发现任何问题。如果ttl为空字符串时，直接连接mysql没有出现问题，
+	// 但是连接mycat时会出现无法插入或更新数据的异常。mysql服务端接收到的sql为更新或插入了NULL值！？
+	if ttl != "" {
+		sqlStatement := "UPDATE %s SET fid=?, ttl=?, updateTime=? WHERE uriPath=?"
+		res, err = db.Exec(fmt.Sprintf(sqlStatement, tableName),
+			fid, ttl, time.Now().Unix(), uriPath)
+	} else {
+		sqlStatement := "UPDATE %s SET fid=?, ttl='', updateTime=? WHERE uriPath=?"
+		res, err = db.Exec(fmt.Sprintf(sqlStatement, tableName),
+			fid, time.Now().Unix(), uriPath)
+	}
 	if err != nil {
 		return err
 	}
-
 	_, err = res.RowsAffected()
 	if err != nil {
 		return err
@@ -248,14 +256,22 @@ func (s *MySqlStore) update(uriPath string, fid string, ttl string,
 }
 
 func (s *MySqlStore) insert(uriPath string, fid string, ttl string,
-	db *sql.DB, tableName string) error {
-	sqlStatement := "INSERT INTO %s (uriPath,fid,ttl,createTime) VALUES(?,?,?,?)"
-	res, err := db.Exec(fmt.Sprintf(sqlStatement, tableName),
-		uriPath, fid, ttl, time.Now().Unix())
+	db *sql.DB, tableName string) (err error) {
+	var res sql.Result
+	// 如果ttl为空字符串时没有发现任何问题。如果ttl为空字符串时，直接连接mysql没有出现问题，
+	// 但是连接mycat时会出现无法插入或更新数据的异常。mysql服务端接收到的sql为更新或插入了NULL值！？
+	if ttl != "" {
+		sqlStatement := "INSERT INTO %s (uriPath,fid,ttl,createTime) VALUES(?,?,?,?)"
+		res, err = db.Exec(fmt.Sprintf(sqlStatement, tableName),
+			uriPath, fid, ttl, time.Now().Unix())
+	} else {
+		sqlStatement := "INSERT INTO %s (uriPath,fid,createTime) VALUES(?,?,?)"
+		res, err = db.Exec(fmt.Sprintf(sqlStatement, tableName),
+			uriPath, fid, time.Now().Unix())
+	}
 	if err != nil {
 		return err
 	}
-
 	_, err = res.RowsAffected()
 	if err != nil {
 		return err
@@ -276,4 +292,3 @@ func (s *MySqlStore) delete(uriPath string, db *sql.DB, tableName string) error 
 	}
 	return nil
 }
-
