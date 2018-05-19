@@ -88,6 +88,8 @@ func NewFilerServer(r *http.ServeMux, ip string, port int, master string, dir st
 	if setting.MysqlConf != nil && len(setting.MysqlConf) != 0 {
 		mysql_store := mysql_store.NewMysqlStore(setting.MysqlConf, setting.IsSharding, setting.ShardCount)
 		fs.filer = flat_namespace.NewFlatNamespaceFiler(master, mysql_store)
+
+		r.HandleFunc("/admin/register", fs.registerHandler)
 	} else if setting.PostgresConf != nil {
 		fs.filer = postgres_store.NewPostgresStore(master, *setting.PostgresConf)
 	} else if cassandra_server != "" {
